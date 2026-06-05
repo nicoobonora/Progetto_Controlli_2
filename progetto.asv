@@ -1,4 +1,4 @@
-addPath('../common')
+addpath('common');
 
 % Variabili
 l = 0.15; % l lunghezza SMA
@@ -25,19 +25,41 @@ g = 9.80665; % forza di gravità
 K_star = (m*g*r2)/(r1*(dlmax-(r1/r2)*z_star)); % costante
 c = 6.2; % altra costante dello SMA
 K_max = 3.92 * 10^3; % costante massima
-x2_eq = Tamb + (Tdiff/c)*(log(K_star/(Kmax - K_star))); % temperatura per tenere il peso a 4cm
-dK_dx2 = ((c*Kmax)/Tdiff)*(exp(c*(x2_eq-Tamb)/Tdiff)/(1+(exp(c*(x2_eq-Tamb)/Tdiff)^2))); % altro parametro per la matrice
+x2_eq = Tavg + (Tdiff/c)*(log(K_star/(K_max - K_star))); % temperatura per tenere il peso a 4cm
+dK_dx2 = ((c*K_max)/Tdiff)*(exp(c*(x2_eq-Tamb)/Tdiff)/(1+(exp(c*(x2_eq-Tamb)/Tdiff)^2))); % altro parametro per la matrice
 x1_eq = sqrt((1/Re)*(h*S*(x2_eq - Tamb)+(x2_eq-Tp)/Rth)); % Corrente equivalente 
-K = Kmax*(1-(1/(1+exp(c*((x2_eq-Tavg)/Tdiff)))));
+K = K_max*(1-(1/(1+exp(c*((x2_eq-Tavg)/Tdiff)))));
 
 % Matrici
-a11 = -(Re/Le);
-a21 = ((2*Re)/Cth)*x1_eq;
-a22 = -((h*S+(1/Rth))/Cth);
-a42 = (r1/r2)*((dlmax-((r1/r2)*z_star))/(m+(J/((r2)^2))));
-a43 = -((((r1)^2)*K)/(((r2)^2)*(m+(J/((r2)^2)))));
-a44 = -(beta/(m+(J/((r2)^2))));
+a11 = -((h*S+(1/Rth))/Cth)
+a31 = (r1/r2)*((dlmax-((r1/r2)*z_star))/(m+(J/((r2)^2))))
+a32 = -((((r1)^2)*K)/(((r2)^2)*(m+(J/((r2)^2)))))
+a33 = -(beta/(m+(J/((r2)^2))))
 
 
+b11 = 2/Cth;
 
-% Mettere la conversione C -> K
+A = [a11, 0, 0; 0, 0, 1; a31, a32, a33]
+B = [b11; 0; 0];
+C = [0, 1, 0];
+D = [0];
+
+% Spazio degli stati
+model = ss(A, B, C, D);
+
+% FdT
+figure(1);
+G = tf(model);
+G
+bode(G);
+
+figure(2);
+% Retroaction
+F = G/(1+G);
+bode(F)
+F
+
+figure(3);
+rlocus(F)
+figure(4);
+rlocus(G)

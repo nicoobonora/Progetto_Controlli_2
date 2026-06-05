@@ -37,23 +37,32 @@ a33 = -(beta/(m+(J/((r2)^2))))
 
 
 b11 = 2*x1_eq/Cth;
+b12 = (h*S)/Cth;
+b13 = 1/(Cth*Rth);
 
 A = [a11, 0, 0; 0, 0, 1; a31, a32, a33]
-B = [b11; 0; 0];
+B = [b11, b12, b13; 0, 0, 0; 0, 0, 0];
 C = [0, 1, 0];
-D = [0];
+D = [0, 0, 0];
 
 % Spazio degli stati
 model = ss(A, B, C, D);
 
-% FdT
+% FdT complessiva e "sotto-G"
 figure(1);
-G = tf(model);
-G
-bode(G);
+Gc = tf(model);
+Gv = Gc(1,1); % V -> z
+Gtamb = Gc(1,2); % Tamb -> z
+Gdtp = Gc(1,3) % Tdp -> z
 
-% Retroaction
+% Plot dei vincoli
+drawBode(Gv);
+
+% Regolatore statico
+% Definisco la variabile s (per progettare il regolatore)
+s = tf('s');
+Rs = 40/s;
+Ge = Gv*Rs;
+
 figure(2);
-F = G/(1+G);
-bode(F)
-F
+h_bode = bodeplot(Ge);

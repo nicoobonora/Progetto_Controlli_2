@@ -52,81 +52,45 @@ D = [0, 0, 0];
 model = ss(A, B, C, D);
 
 % FdT complessiva e "sotto-G"
-figure(1);
 Gc = tf(model);
 Gv = Gc(1,1); % V -> z
 Gtamb = Gc(1,2); % Tamb -> z
-Gdtp = Gc(1,3) % Tdp -> z
+Gdtp = Gc(1,3); % Tdp -> z
 
-% Plot dei vincoli
-drawBode(Gv);
+% ---
+% --- Progetto regolatore (per soddisfare le specifiche)
+% ---
 
-% Regolatore statico
-% === Regolatore proposto ===
 s = tf('s');
-figure
+wn = 11.89; % f dei poli del picco
+zeta_n = 0.03; % smorzamento
 
-
-% --- PRIMA SOLUZIONE ---
-
-wn = 11.89;
-zeta_n = 0.03;
-zeta_d = 0.30;
-
-% Notch
-N = (s^2 + 2*zeta_n*wn*s + wn^2) * 1/(s+1000)
+% Zeri (per abbattere il polo)
+N = (s^2 + 2*zeta_n*wn*s + wn^2)
 
 % Lead
-z = 2.2;
-p = 14.0;
-Lead = (s + z) / (s + p);
+z_a = 2.2;
+p_a = 14.0;
+Ra = (s + z_a) / (s + p_a);
+
+% Polo di fisica realizzabilità
+p_fs = 1/(s+1000)
 
 % PI
-Ki = 2500;
-Rs = Ki / s;
+K = 2500;
+Rs = K/s;
 
-rlocus(Gv*1/s*N)
+% Ritardatrice
+p_r = 0.0025;
+z_r = 0.0225;
 
-beta = 9;
-p_lag = 0.0025;
-z_lag = beta * p_lag;
-
-Lag = (s + z_lag) / (s + p_lag);
+Rr = (s + z_r) / (s + p_r);
 
 % Controllore totale
-R = Rs * Lead * N * Lag ;
+R = Rs * Ra * N * p_fs * Rr ;
 
-% Loop gain
-Ge = Gv * R ;
+% Open Loop
+L = Gv * R ;
 
-drawBode(Ge);      % controlla: 1 crossing, PM >65°, |L_res| << 0 dB
-
-% % --- PRIMA SOLUZIONE ---
-% 
-% 
-% % Notch
-% N = (s^2 + 2*zeta_n*wn*s + wn^2) / (s^2 + 2*zeta_d*wn*s + wn^2);
-% 
-% % Lead (esempio per ~45-50° boost)
-% z = 2.2;
-% p = 14.0;
-% Lead = (s + z) / (s + p);
-% 
-% % Integrale + guadagno
-% Ki = 190000000000;
-% Rs = Ki / s;
-% 
-% 
-% beta = 9;
-% p_lag = 0.0025;
-% z_lag = beta * p_lag;
-% 
-% Lag = (s + z_lag) / (s + p_lag);
-% 
-% % Controllore totale
-% R = Rs * Lead * N * Lag * (s+13)^3 * 1/((s+10000)^3);
-% 
-% % Loop gain
-% Ge = Gv * R ;
-% 
-% drawBode(Ge);      % controlla: 1 crossing, PM >65°, |L_res| << 0 dB
+% Grafici
+drawBode(L);

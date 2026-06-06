@@ -64,9 +64,83 @@ drawBode(Gv);
 % Regolatore statico
 % === Regolatore proposto ===
 s = tf('s');
-Rs = 60 / s;          % Ki = 20 (tuned per PM > 55° e stabilità)
-Ge = Gv * Rs;         % loop gain
+figure
 
-BF = (s^2 + 5s + 1) * (s)
 
-drawBode(Ge)
+% --- PRIMA SOLUZIONE ---
+
+wn = 11.89;
+zeta_n = 0.03;
+
+% Notch
+N = (s^2 + 2*zeta_n*wn*s + wn^2) * 1/(s+1000)
+
+% Lead
+z = 2.2;
+p = 14.0;
+Lead = (s + z) / (s + p);
+
+% PI
+Ki = 2500;
+Rs = Ki / s;
+
+beta = 9;
+p_lag = 0.0025;
+z_lag = beta * p_lag;
+
+Lag = (s + z_lag) / (s + p_lag);
+
+[alpha, tau] = lagCompensatorWithFormulas(Gv * Rs * Lead * N)
+Lag2 = (1 + tau)/(1 + alpha*tau)
+
+bode()
+
+% Controllore totale
+R = Rs * Lead * N * Lag ;
+
+% Loop gain
+Ge = Gv * R ;
+
+drawBode(Ge);      % controlla: 1 crossing, PM >65°, |L_res| << 0 dB
+
+% figure
+% drawBode(Gv*1/s)
+% figure
+% rlocus(Gv*1/s)
+% figure 
+% drawBode(Gv*1/s*(s^2 + 2*zeta_n*wn*s + wn^2))
+% figure
+% drawBode(Gv*1/s*(s^2 + 2*zeta_n*wn*s + wn^2)*Lead)
+% figure
+drawBode(Gv*1/s*(s^2 + 2*zeta_n*wn*s + wn^2)*Lead*3000*(1/(s+1000)))
+Gv
+
+% % --- PRIMA SOLUZIONE ---
+% 
+% 
+% % Notch
+% N = (s^2 + 2*zeta_n*wn*s + wn^2) / (s^2 + 2*zeta_d*wn*s + wn^2);
+% 
+% % Lead (esempio per ~45-50° boost)
+% z = 2.2;
+% p = 14.0;
+% Lead = (s + z) / (s + p);
+% 
+% % Integrale + guadagno
+% Ki = 190000000000;
+% Rs = Ki / s;
+% 
+% 
+% beta = 9;
+% p_lag = 0.0025;
+% z_lag = beta * p_lag;
+% 
+% Lag = (s + z_lag) / (s + p_lag);
+% 
+% % Controllore totale
+% R = Rs * Lead * N * Lag * (s+13)^3 * 1/((s+10000)^3);
+% 
+% % Loop gain
+% Ge = Gv * R ;
+% 
+% drawBode(Ge);      % controlla: 1 crossing, PM >65°, |L_res| << 0 dB

@@ -83,7 +83,6 @@ Rs = K/s;
 % Ritardatrice
 p_r = 0.0025;
 z_r = 0.0225;
-
 Rr = (s + z_r) / (s + p_r);
 
 % Controllore totale
@@ -94,3 +93,8 @@ L = Gv * R ;
 
 % Grafici
 drawBode(L);
+
+
+
+% Prove
+x1_eq*Re

@@ -98,3 +98,5 @@ drawBode(L);
 
 % Prove
 x1_eq*Re
+
+[num, den] = tfdata(R, 'v')

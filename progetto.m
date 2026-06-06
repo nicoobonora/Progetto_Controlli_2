@@ -100,3 +100,5 @@ drawBode(L);
 x1_eq*Re
 
 [num, den] = tfdata(R, 'v')
+
+x2_eq

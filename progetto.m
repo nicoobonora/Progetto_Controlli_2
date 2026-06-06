@@ -91,14 +91,11 @@ R = Rs * Ra * N * p_fs * Rr ;
 % Open Loop
 L = Gv * R ;
 
+% Closed Loop
+F = feedback(Gv*R, 1);
+
 % Grafici
 drawBode(L);
-
-
-
-% Prove
-x1_eq*Re
-
-[num, den] = tfdata(R, 'v')
-
-x2_eq
+figure;
+step(F);
+grid on;

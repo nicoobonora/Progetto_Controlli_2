@@ -1,4 +1,7 @@
 addpath('common');
+clc;
+clear;
+close all;
 
 % Variabili
 l = 0.15; % l lunghezza SMA
@@ -54,26 +57,16 @@ Gc = tf(model);
 Gv = Gc(1,1); % V -> z
 Gtamb = Gc(1,2); % Tamb -> z
 Gdtp = Gc(1,3) % Tdp -> z
-bode(Gv);
 
 % Plot dei vincoli
-w_min = 0.001;
-w_max = 0.5;
-mag_min = -20;
-mag_max = 32.2;
-w_box = [w_min, w_max, w_max, w_min];
-mag_box = [mag_min, mag_min, mag_max, mag_max];
-patch(w_box, mag_box, 'red', 'FaceAlpha', 0.3, 'EdgeColor', 'red');
-set(gca, 'XScale', 'log');
-
-% Formattazione del grafico
-xlabel('Pulsazione \omega (rad/s)');
-ylabel('Modulo (dB)');
-title('Vincolo di ampiezza: fino a 32.2 dB per \omega < 0.5');
-grid on;
-xlim([0.001 10]); % Allarghiamo la vista per vedere bene l'area
-ylim([-30 50]);
+drawBode(Gv);
 
 % Regolatore statico
-% Definisco la variabile s (per progettare il regolatore)
+% === Regolatore proposto ===
 s = tf('s');
+Rs = 60 / s;          % Ki = 20 (tuned per PM > 55° e stabilità)
+Ge = Gv * Rs;         % loop gain
+
+BF = (s^2 + 5s + 1) * (s)
+
+drawBode(Ge)

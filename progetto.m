@@ -76,11 +76,11 @@ Ra = (s + z_a) / (s + p_a);
 % Polo di fisica realizzabilità
 p_fs = 1/(s+1000)
 
-% PI
+% Regolatore statico
 K = 2500;
 Rs = K/s;
 
-% Ritardatrice
+% Ritardatrice (valutare se tenerla perchè potrebbe creare code)
 p_r = 0.0025;
 z_r = 0.0225;
 Rr = (s + z_r) / (s + p_r);
@@ -96,6 +96,8 @@ F = feedback(Gv*R, 1);
 
 % Grafici
 drawBode(L);
+drawBodeWithRegulator(Gv*R, R)
+DrawSforzoControllo(Gv, R)
 figure;
-step(F);
+step(0.5 * F);
 grid on;

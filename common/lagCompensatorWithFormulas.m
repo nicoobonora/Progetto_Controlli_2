@@ -1,8 +1,4 @@
 function [alpha, tau] = lagCompensatorWithFormulas(Mf_star, Ge, wc_star)
-    % Rete ritardatrice:
-    % Rr(s) = (1 + alpha*tau*s)/(1 + tau*s)
-    % con 0 < alpha < 1
-
     Gjwc_star = evalfr(Ge, 1i*wc_star);
 
     starting_magnitude = abs(Gjwc_star);

@@ -61,46 +61,11 @@ Gdtp = Gc(1,3); % Tdp -> z
 % --- Progetto regolatore (per soddisfare le specifiche)
 % ---
 
+drawBode(Gv);
+
 s = tf('s');
-wn = 11.89; % f dei poli del picco
-zeta_n = 0.03; % smorzamento
 
-% Zeri (per abbattere il polo)
-N = (s^2 + 2*zeta_n*wn*s + wn^2)
+Ge = Gv * 1/s
 
-% Lead
-z_a = 2.2;
-p_a = 14.0;
-Ra = (s + z_a) / (s + p_a);
 
-% Polo di fisica realizzabilità
-p_fs = 1/(s+1000)
-
-% Regolatore statico
-K = 2500;
-Rs = K/s;
-
-% Ritardatrice (valutare se tenerla perchè potrebbe creare code)
-p_r = 0.0025;
-z_r = 0.0225;
-Rr = (s + z_r) / (s + p_r);
-
-% Controllore totale
-R = Rs * Ra * N * p_fs * Rr ;
-
-% Open Loop
-L = Gv * R ;
-
-% Closed Loop
-F = feedback(Gv*R, 1);
-
-% Grafici
-drawBode(L);
-figure;
-step(F);
-grid on;
-
-x2_eq
-
-figure;
-step(Ge)
+drawBode(Ge)

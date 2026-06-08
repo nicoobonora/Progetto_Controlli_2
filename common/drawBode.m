@@ -17,6 +17,7 @@ end
     hold on;
     yl = ylim;
     patch([4.5, 100000, 100000, 4.5], [yl(1), yl(1), yl(2), yl(2)], 'green', 'FaceAlpha', 0.3, 'EdgeColor', 'green', 'PickableParts', 'none');
+    patch([0.001, 0.5, 0.5, 0.001], [-150, -150, 19, 19], 'red', 'FaceAlpha', 0.3, 'EdgeColor', 'red', 'PickableParts', 'none');
     patch([1000, 100000, 100000, 1000], [-40, -40, 100, 100], 'red', 'FaceAlpha', 0.3, 'EdgeColor', 'red', 'PickableParts', 'none');
     axes(ax_fase);
     hold on;

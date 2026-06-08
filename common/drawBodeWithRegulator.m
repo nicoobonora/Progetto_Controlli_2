@@ -1,25 +1,18 @@
 function drawBode(varargin)
 
-    % Frequenze di plot
-    w_min = 1e-3;      % non si può usare 0 in scala log
+    w_min = 1e-3;
     w_max = 1e4;
     w = logspace(log10(w_min), log10(w_max), 3000);
 
-    % Specifica su R
     w_spec = 0.5;
     R_spec_dB = 40.7;
 
     figure;
 
-    % =====================
-    % MODULO
-    % =====================
     ax_mod = subplot(2,1,1);
     hold on;
     grid on;
 
-    % Rettangolo arancione: zona vietata per R
-    % cioè |R(jw)| < 40.7 dB per w <= 0.5 rad/s
     y_bottom = -150;
     y_top = R_spec_dB;
 
@@ -39,7 +32,6 @@ function drawBode(varargin)
     xline(w_spec, '--', '\omega = 0.5 rad/s', ...
         'HandleVisibility', 'off');
 
-    % Plot dei moduli dei sistemi passati alla funzione
     for k = 1:nargin
         [mag, ~] = bode(varargin{k}, w);
         mag = squeeze(mag);
@@ -53,9 +45,6 @@ function drawBode(varargin)
     title('Bode Diagram');
     set(gca, 'XScale', 'log');
 
-    % =====================
-    % FASE
-    % =====================
     ax_fase = subplot(2,1,2);
     hold on;
     grid on;
@@ -71,11 +60,7 @@ function drawBode(varargin)
     xlabel('Frequency [rad/s]');
     ylabel('Phase [deg]');
     set(gca, 'XScale', 'log');
-
-    % Link assi x
     linkaxes([ax_mod, ax_fase], 'x');
-
-    % Legenda
     legend(ax_mod, 'G_v', 'R', 'Location', 'best');
     legend(ax_fase, 'G_v', 'R', 'Location', 'best');
 

@@ -61,24 +61,54 @@ Gdtp = Gc(1,3); % Tdp -> z
 % --- Progetto regolatore (per soddisfare le specifiche)
 % ---
 
-drawBode(Gv);
-
 s = tf('s');
 
-K = 10000;
-z_pi = 1.2;
+% Zero
+z_1 = 1.2;
+
+% Anticipatrici
 
 alpha1 = 0.15;
 tau1   = 0.08;
-
-Lead1 = (1 + tau1*s) / (1 + alpha1*tau1*s);
-
+Ra1 = (1 + tau1*s) / (1 + alpha1*tau1*s);
 alpha2 = 0.2;
 tau2   = 0.04;
-Lead2 = (1 + tau2*s) / (1 + alpha2*tau2*s);
+Ra2 = (1 + tau2*s) / (1 + alpha2*tau2*s);
 
-R = K * (s + z_pi) / s * Lead1 * Lead2 * (s+13) * 1/(s+1000);
+% Secondo zero 
+z_2 = 13
+
+% Polo fisica realizzabilità
+p_fr = 1000
+
+% Guadagno
+mu = 10000;
+
+R = mu * 1 / s * (s + z_1) * Ra1 * Ra2 * (s+z_2) * 1/(s+p_fr);
 L = R * Gv;
 
+
 drawBode(L)
-margin(L)
+
+% Risposta
+figure;
+F = L/(1+L);
+step(F)
+stepinfo(F, 'SettlingTimeThreshold', 0.01)
+
+% Requisito sul regolatore
+figure;
+drawBodeWithRegulator(Gv*R, R)
+
+% Con prefiltro (del secondo ordine)
+Pf = 1/((1+s*0.65/15)*(1+s*0.65/15));
+T = Pf * feedback(R * Gv, 1);
+figure;
+step(T)
+stepinfo(T, 'SettlingTimeThreshold', 0.01)
+
+% Sforzo di controllo
+U = R * Pf / (1 + R * Gv);
+figure;
+bode(U)
+grid on
